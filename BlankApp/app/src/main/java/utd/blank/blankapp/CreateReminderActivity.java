@@ -6,6 +6,10 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.TimePicker;
+
+import java.util.List;
 
 public class CreateReminderActivity extends AppCompatActivity {
 
@@ -39,6 +43,25 @@ public class CreateReminderActivity extends AppCompatActivity {
 
     public void saveReminder(View view) {
         Intent intent = new Intent(this, MainActivity.class);
+
+        Reminder r = new Reminder();
+        EditText editText = (EditText) findViewById(R.id.editText);
+        r.name = editText.getText().toString();
+        editText = (EditText) findViewById(R.id.editText2);
+        r.description = editText.getText().toString();
+        TimePicker timePicker = (TimePicker) findViewById(R.id.timePicker);
+        r.hour = timePicker.getHour();
+        r.minute = timePicker.getMinute();
+
+        ReminderDatabaseHelper dbHelper = ReminderDatabaseHelper.getInstance(this);
+        dbHelper.addReminder(r);
+
+        List<Reminder> reminders = dbHelper.getAllReminders();
+        for (Reminder reminder : reminders) {
+            System.out.println("Name:" + reminder.name + " Desc:" + reminder.description + " H:" +
+                    reminder.hour + " M:" + reminder.minute);
+        }
+
         startActivity(intent);
     }
 }

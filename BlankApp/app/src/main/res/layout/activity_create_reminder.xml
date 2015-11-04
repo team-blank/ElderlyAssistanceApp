@@ -4,7 +4,7 @@
     android:layout_height="match_parent">
 
     <TimePicker
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/timePicker" />
 
@@ -17,10 +17,18 @@
         android:password="false"
         android:phoneNumber="false" />
 
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/editText2"
+        android:hint="Task"
+        android:password="false"
+        android:phoneNumber="false" />
+
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Save"
+        android:text="@string/button_save"
         android:id="@+id/button2"
         android:layout_gravity="center_horizontal"
         android:onClick="saveReminder" />
