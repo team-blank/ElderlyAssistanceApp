@@ -20,6 +20,24 @@ public class CreateReminderActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        Intent intent = getIntent();
+        String reminder_message = intent.getStringExtra(MainActivity.REMINDER_NAME_MESSAGE);
+
+        ReminderDatabaseHelper dbHelper = ReminderDatabaseHelper.getInstance(this);
+        Reminder r = dbHelper.getReminder(reminder_message);
+        EditText editText = (EditText) findViewById(R.id.editText);
+        editText.setText(r.name);
+        editText = (EditText) findViewById(R.id.editText2);
+        editText.setText(r.description);
+        TimePicker timePicker = (TimePicker) findViewById(R.id.timePicker);
+        timePicker.setCurrentHour(r.hour);
+        timePicker.setCurrentMinute(r.minute);
+
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_create_reminder, menu);
@@ -50,8 +68,12 @@ public class CreateReminderActivity extends AppCompatActivity {
         editText = (EditText) findViewById(R.id.editText2);
         r.description = editText.getText().toString();
         TimePicker timePicker = (TimePicker) findViewById(R.id.timePicker);
-        r.hour = timePicker.getHour();
-        r.minute = timePicker.getMinute();
+
+        //the new methods don't work? but deprecated do.
+        r.hour = timePicker.getCurrentHour();
+        r.minute = timePicker.getCurrentMinute();
+        //r.hour = timePicker.getHour();
+        //r.minute = timePicker.getMinute();
 
         ReminderDatabaseHelper dbHelper = ReminderDatabaseHelper.getInstance(this);
         dbHelper.addReminder(r);

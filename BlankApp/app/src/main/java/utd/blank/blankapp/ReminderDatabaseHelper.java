@@ -24,6 +24,7 @@ public class ReminderDatabaseHelper extends SQLiteOpenHelper {
     private static String KEY_REMINDER_ID = "id";
     private static String KEY_REMINDER_NAME = "name";
     private static String KEY_REMINDER_DESCRIPTION = "description";
+    private static String KEY_REMINDER_CATEGORY = "category";
     private static String KEY_REMINDER_HOUR = "hour";
     private static String KEY_REMINDER_MINUTE = "minute";
 
@@ -46,6 +47,7 @@ public class ReminderDatabaseHelper extends SQLiteOpenHelper {
                 KEY_REMINDER_ID + " INTEGER PRIMARY KEY," +
                 KEY_REMINDER_NAME + " TEXT, " +
                 KEY_REMINDER_DESCRIPTION + " TEXT, " +
+                KEY_REMINDER_CATEGORY + " INTEGER, " +
                 KEY_REMINDER_HOUR + " INTEGER, " +
                 KEY_REMINDER_MINUTE + " INTEGER" +
                 ")";
@@ -82,6 +84,7 @@ public class ReminderDatabaseHelper extends SQLiteOpenHelper {
             ContentValues values = new ContentValues();
             values.put(KEY_REMINDER_NAME, reminder.name);
             values.put(KEY_REMINDER_DESCRIPTION, reminder.description);
+            values.put(KEY_REMINDER_CATEGORY, reminder.category);
             values.put(KEY_REMINDER_HOUR, reminder.hour);
             values.put(KEY_REMINDER_MINUTE, reminder.minute);
 
@@ -94,6 +97,34 @@ public class ReminderDatabaseHelper extends SQLiteOpenHelper {
             db.endTransaction();
         }
     }   //end addReminder
+
+    public Reminder getReminder(String id) {
+        String REMINDER_SELECT_QUERY = String.format("SELECT * FROM %s WHERE %s = '%s'",
+                TABLE_REMINDERS, KEY_REMINDER_NAME, id);
+
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery(REMINDER_SELECT_QUERY, null);
+        Reminder reminder = new Reminder();
+        try {
+            if (cursor.moveToFirst()) {
+                reminder.id = Integer.parseInt(cursor.getString(cursor.getColumnIndex(KEY_REMINDER_ID)));
+                reminder.name = cursor.getString(cursor.getColumnIndex(KEY_REMINDER_NAME));
+                reminder.description = cursor.getString(cursor.getColumnIndex(KEY_REMINDER_DESCRIPTION));
+                reminder.category = Integer.parseInt(cursor.getString(cursor.getColumnIndex(KEY_REMINDER_CATEGORY)));
+                reminder.hour = Integer.parseInt(cursor.getString(cursor.getColumnIndex(KEY_REMINDER_HOUR)));
+                reminder.minute = Integer.parseInt(cursor.getString(cursor.getColumnIndex(KEY_REMINDER_MINUTE)));
+            }
+        } catch (Exception e) {
+            Log.d(TAG, "Error while trying to retrieve reminder");
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
+        }
+        return reminder;
+    }
+
+
 
     public List<Reminder> getAllReminders() {
         List<Reminder> reminders = new ArrayList<>();
@@ -108,8 +139,10 @@ public class ReminderDatabaseHelper extends SQLiteOpenHelper {
             if (cursor.moveToFirst()) {
                 do {
                     Reminder newReminder = new Reminder();
+                    newReminder.id = Integer.parseInt(cursor.getString(cursor.getColumnIndex(KEY_REMINDER_ID)));
                     newReminder.name = cursor.getString(cursor.getColumnIndex(KEY_REMINDER_NAME));
                     newReminder.description = cursor.getString(cursor.getColumnIndex(KEY_REMINDER_DESCRIPTION));
+                    newReminder.category = Integer.parseInt(cursor.getString(cursor.getColumnIndex(KEY_REMINDER_CATEGORY)));
                     newReminder.hour = Integer.parseInt(cursor.getString(cursor.getColumnIndex(KEY_REMINDER_HOUR)));
                     newReminder.minute = Integer.parseInt(cursor.getString(cursor.getColumnIndex(KEY_REMINDER_MINUTE)));
                     reminders.add(newReminder);
@@ -126,11 +159,15 @@ public class ReminderDatabaseHelper extends SQLiteOpenHelper {
         return reminders;
     }   //end getAllReminders
 
-    public int updateReminderHour(Reminder reminder, int hour) {
+    public int updateReminder(Reminder reminder) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
+        values.put(KEY_REMINDER_MINUTE, reminder.minute);
         values.put(KEY_REMINDER_HOUR, reminder.hour);
+        values.put(KEY_REMINDER_DESCRIPTION, reminder.description);
+        values.put(KEY_REMINDER_CATEGORY, reminder.category);
+        values.put(KEY_REMINDER_NAME, reminder.name);
 
         return db.update(TABLE_REMINDERS, values, KEY_REMINDER_NAME + " = ?",
                 new String[] { String.valueOf(reminder.name) });

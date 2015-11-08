@@ -1,5 +1,6 @@
 package utd.blank.blankapp;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -16,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+    public final static String REMINDER_NAME_MESSAGE = "com.utd.reminder.REMINDER_NAME";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_1, names);
         listView.setAdapter(adapter);
-        listView.setOnItemClickListener(new ListViewListener(listView));
+        listView.setOnItemClickListener(new ListViewListener(this, listView));
     }
 
     @Override
@@ -73,29 +76,33 @@ public class MainActivity extends AppCompatActivity {
 
     public void createReminder(View view) {
         Intent intent = new Intent(this, CreateReminderActivity.class);
+        intent.putExtra(REMINDER_NAME_MESSAGE, Integer.toString(-1));
         startActivity(intent);
     }
 
     private class ListViewListener implements OnItemClickListener {
+        Activity parent;
         ListView listView;
 
-        public ListViewListener(ListView listView) {
+        public ListViewListener(Activity parent, ListView listView) {
             super();
+            this.parent = parent;
             this.listView = listView;
         }
 
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            // ListView Clicked item index
-            int itemPosition     = position;
+            int itemPosition = position;
 
-            // ListView Clicked item value
-            String  itemValue    = (String) listView.getItemAtPosition(position);
-
-            // Show Alert
+            String reminderName = (String) listView.getItemAtPosition(position);
             Toast.makeText(getApplicationContext(),
-                    "Position :" + itemPosition + "  ListItem : " + itemValue, Toast.LENGTH_LONG)
+                    "Pos:" + itemPosition + " item: " + reminderName + " id:" + id, Toast.LENGTH_LONG)
                     .show();
+
+            Intent intent = new Intent(this.parent, CreateReminderActivity.class);
+//            intent.putExtra(REMINDER_NAME_MESSAGE, reminderName);
+            intent.putExtra(REMINDER_NAME_MESSAGE, Integer.toString((int)id));    //yolo
+            startActivity(intent);
         }
     }   //end class ListViewListener
 }
