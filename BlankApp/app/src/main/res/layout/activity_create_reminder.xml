@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/editText"
         android:layout_gravity="center_horizontal"
-        android:hint="Task"
+        android:hint="Name"
         android:password="false"
         android:phoneNumber="false" />
 
@@ -21,7 +21,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/editText2"
-        android:hint="Task"
+        android:hint="Description"
         android:password="false"
         android:phoneNumber="false" />
 

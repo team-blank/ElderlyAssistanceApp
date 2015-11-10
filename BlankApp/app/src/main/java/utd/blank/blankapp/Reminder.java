@@ -12,7 +12,7 @@ public class Reminder {
     public int minute;
 
     public Reminder() {
-        this(0, "test_name", "test_description", 0, 12, 0);
+        this(-1, "test_name", "test_description", 0, 12, 0);
     }
 
     public Reminder(int id, String name, String description, int category, int hour, int minute) {

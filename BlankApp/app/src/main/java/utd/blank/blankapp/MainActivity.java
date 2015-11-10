@@ -4,13 +4,13 @@ import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -18,7 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    public final static String REMINDER_NAME_MESSAGE = "com.utd.reminder.REMINDER_NAME";
+    public final static String REMINDER_ID_MESSAGE = "com.utd.reminder.REMINDER_ID";
+    private String TAG = "main";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void createReminder(View view) {
         Intent intent = new Intent(this, CreateReminderActivity.class);
-        intent.putExtra(REMINDER_NAME_MESSAGE, Integer.toString(-1));
+        intent.putExtra(REMINDER_ID_MESSAGE, Integer.toString(-1));
         startActivity(intent);
     }
 
@@ -100,8 +101,9 @@ public class MainActivity extends AppCompatActivity {
                     .show();
 
             Intent intent = new Intent(this.parent, CreateReminderActivity.class);
-//            intent.putExtra(REMINDER_NAME_MESSAGE, reminderName);
-            intent.putExtra(REMINDER_NAME_MESSAGE, Integer.toString((int)id));    //yolo
+//            intent.putExtra(REMINDER_ID_MESSAGE, reminderName);
+            intent.putExtra(REMINDER_ID_MESSAGE, (int)id);    //yolo
+            Log.d(TAG, String.format("Sending %d", (int)id));
             startActivity(intent);
         }
     }   //end class ListViewListener

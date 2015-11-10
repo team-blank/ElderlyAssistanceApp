@@ -3,6 +3,7 @@ package utd.blank.blankapp;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -12,6 +13,8 @@ import android.widget.TimePicker;
 import java.util.List;
 
 public class CreateReminderActivity extends AppCompatActivity {
+    private String TAG = "cra";
+    private int currentID = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,35 +26,36 @@ public class CreateReminderActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         Intent intent = getIntent();
-        String reminder_message = intent.getStringExtra(MainActivity.REMINDER_NAME_MESSAGE);
+        int reminder_id = intent.getIntExtra(MainActivity.REMINDER_ID_MESSAGE, -1);
+        currentID = reminder_id;
+        Log.d(TAG, "Received " + reminder_id);
+
 
         ReminderDatabaseHelper dbHelper = ReminderDatabaseHelper.getInstance(this);
-        Reminder r = dbHelper.getReminder(reminder_message);
-        EditText editText = (EditText) findViewById(R.id.editText);
-        editText.setText(r.name);
-        editText = (EditText) findViewById(R.id.editText2);
-        editText.setText(r.description);
-        TimePicker timePicker = (TimePicker) findViewById(R.id.timePicker);
-        timePicker.setCurrentHour(r.hour);
-        timePicker.setCurrentMinute(r.minute);
+        Reminder r = dbHelper.getReminder(reminder_id);
+        Log.d(TAG, "Retrieved " + r.name + " " + r.id);
+        if (reminder_id >= 0) {
+            EditText editText = (EditText) findViewById(R.id.editText);
+            editText.setText(r.name);
+            editText = (EditText) findViewById(R.id.editText2);
+            editText.setText(r.description);
+            TimePicker timePicker = (TimePicker) findViewById(R.id.timePicker);
+            timePicker.setCurrentHour(r.hour);
+            timePicker.setCurrentMinute(r.minute);
+        }
 
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_create_reminder, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
@@ -63,6 +67,7 @@ public class CreateReminderActivity extends AppCompatActivity {
         Intent intent = new Intent(this, MainActivity.class);
 
         Reminder r = new Reminder();
+        r.id = currentID;   //awful idea
         EditText editText = (EditText) findViewById(R.id.editText);
         r.name = editText.getText().toString();
         editText = (EditText) findViewById(R.id.editText2);
@@ -76,12 +81,11 @@ public class CreateReminderActivity extends AppCompatActivity {
         //r.minute = timePicker.getMinute();
 
         ReminderDatabaseHelper dbHelper = ReminderDatabaseHelper.getInstance(this);
-        dbHelper.addReminder(r);
-
-        List<Reminder> reminders = dbHelper.getAllReminders();
-        for (Reminder reminder : reminders) {
-            System.out.println("Name:" + reminder.name + " Desc:" + reminder.description + " H:" +
-                    reminder.hour + " M:" + reminder.minute);
+        Log.d(TAG, String.format("Adding or updating reminder with id %d", currentID));
+        if (r.id >= 0) {
+            dbHelper.updateReminder(r);
+        } else {
+            dbHelper.addReminder(r);
         }
 
         startActivity(intent);
