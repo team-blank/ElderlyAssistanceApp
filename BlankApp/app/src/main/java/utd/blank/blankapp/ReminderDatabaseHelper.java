@@ -27,6 +27,7 @@ public class ReminderDatabaseHelper extends SQLiteOpenHelper {
     private static String KEY_REMINDER_CATEGORY = "category";
     private static String KEY_REMINDER_HOUR = "hour";
     private static String KEY_REMINDER_MINUTE = "minute";
+    private static String KEY_REMINDER_IMAGEPATH = "imagepath";
 
     private static String TAG = "db";   //tag output as db
 
@@ -49,7 +50,8 @@ public class ReminderDatabaseHelper extends SQLiteOpenHelper {
                 KEY_REMINDER_DESCRIPTION + " TEXT, " +
                 KEY_REMINDER_CATEGORY + " INTEGER, " +
                 KEY_REMINDER_HOUR + " INTEGER, " +
-                KEY_REMINDER_MINUTE + " INTEGER" +
+                KEY_REMINDER_MINUTE + " INTEGER, " +
+                KEY_REMINDER_IMAGEPATH + " TEXT" +
                 ")";
 
         db.execSQL(CREATE_REMINDERS_TABLE);
@@ -87,6 +89,7 @@ public class ReminderDatabaseHelper extends SQLiteOpenHelper {
             values.put(KEY_REMINDER_CATEGORY, reminder.category);
             values.put(KEY_REMINDER_HOUR, reminder.hour);
             values.put(KEY_REMINDER_MINUTE, reminder.minute);
+            values.put(KEY_REMINDER_IMAGEPATH, reminder.imagePath);
 
             //try to insert; sqlite auto increments the primary key column on an insert so don't need to specify
             db.insertOrThrow(TABLE_REMINDERS, null, values);
@@ -110,6 +113,7 @@ public class ReminderDatabaseHelper extends SQLiteOpenHelper {
         values.put(KEY_REMINDER_DESCRIPTION, reminder.description);
         values.put(KEY_REMINDER_CATEGORY, reminder.category);
         values.put(KEY_REMINDER_NAME, reminder.name);
+        values.put(KEY_REMINDER_IMAGEPATH, reminder.imagePath);
 
         //do need an id when updating, though
         return db.update(TABLE_REMINDERS,
@@ -135,9 +139,10 @@ public class ReminderDatabaseHelper extends SQLiteOpenHelper {
                 reminder.category = Integer.parseInt(cursor.getString(cursor.getColumnIndex(KEY_REMINDER_CATEGORY)));
                 reminder.hour = Integer.parseInt(cursor.getString(cursor.getColumnIndex(KEY_REMINDER_HOUR)));
                 reminder.minute = Integer.parseInt(cursor.getString(cursor.getColumnIndex(KEY_REMINDER_MINUTE)));
-                Log.d(TAG, String.format("%s %s %s %s %s %s",
+                reminder.imagePath = cursor.getString(cursor.getColumnIndex(KEY_REMINDER_IMAGEPATH));
+                Log.d(TAG, String.format("%s %s %s %s %s %s %s",
                         reminder.id, reminder.name, reminder.description,
-                        reminder.category, reminder.hour, reminder.minute));
+                        reminder.category, reminder.hour, reminder.minute, reminder.imagePath));
             }
         } catch (Exception e) {
             Log.d(TAG, "Error while trying to retrieve reminder");
@@ -168,6 +173,7 @@ public class ReminderDatabaseHelper extends SQLiteOpenHelper {
                     newReminder.category = Integer.parseInt(cursor.getString(cursor.getColumnIndex(KEY_REMINDER_CATEGORY)));
                     newReminder.hour = Integer.parseInt(cursor.getString(cursor.getColumnIndex(KEY_REMINDER_HOUR)));
                     newReminder.minute = Integer.parseInt(cursor.getString(cursor.getColumnIndex(KEY_REMINDER_MINUTE)));
+                    newReminder.imagePath = cursor.getString(cursor.getColumnIndex(KEY_REMINDER_IMAGEPATH));
                     reminders.add(newReminder);
 
                 } while(cursor.moveToNext());

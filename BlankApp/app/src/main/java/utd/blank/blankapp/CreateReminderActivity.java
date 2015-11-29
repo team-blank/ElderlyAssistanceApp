@@ -1,6 +1,7 @@
 package utd.blank.blankapp;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -8,13 +9,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TimePicker;
 
+import java.io.File;
 import java.util.List;
 
 public class CreateReminderActivity extends AppCompatActivity {
     private String TAG = "cra";
     private int currentID = -1;
+    static int PICK_IMAGE = 100;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +46,8 @@ public class CreateReminderActivity extends AppCompatActivity {
             TimePicker timePicker = (TimePicker) findViewById(R.id.timePicker);
             timePicker.setCurrentHour(r.hour);
             timePicker.setCurrentMinute(r.minute);
+            ImageView imageView = (ImageView) findViewById(R.id.imageView);
+            //imageView.setImageURI(Uri.fromFile(new File(r.imagePath)));
         }
 
     }
@@ -90,4 +96,24 @@ public class CreateReminderActivity extends AppCompatActivity {
 
         startActivity(intent);
     }
+
+    public void openGallery(View view) {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK && requestCode == PICK_IMAGE) {
+            Uri imageUri = data.getData();
+            Log.d(TAG, "Got " + imageUri.getPath());
+            ImageView imageView = (ImageView) findViewById(R.id.imageView);
+            imageView.setImageURI(imageUri);
+        }
+    }
+
+
 }
