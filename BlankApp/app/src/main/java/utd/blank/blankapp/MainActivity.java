@@ -20,6 +20,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     public final static String REMINDER_ID_MESSAGE = "com.utd.reminder.REMINDER_ID";
     private String TAG = "main";
+    private int[] reminderIDs = new int[0];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,9 +31,11 @@ public class MainActivity extends AppCompatActivity {
 
         List<Reminder> reminders = ReminderDatabaseHelper.getInstance(this).getAllReminders();
         List<String> names = new ArrayList<>();
-
+        reminderIDs = new int[reminders.size()];
+        int i = 0;
         for (Reminder reminder : reminders) {
             names.add(reminder.name);
+            reminderIDs[i++] = reminder.id;
         }
 
 //        //testing some db stuff
@@ -93,17 +96,17 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            int itemPosition = position;
+            int reminderID = reminderIDs[(int)id];
 
             String reminderName = (String) listView.getItemAtPosition(position);
             Toast.makeText(getApplicationContext(),
-                    "Pos:" + itemPosition + " item: " + reminderName + " id:" + id, Toast.LENGTH_LONG)
+                    "Pos:" + position + " reminderID:" + reminderID, Toast.LENGTH_LONG)
                     .show();
 
             Intent intent = new Intent(this.parent, CreateReminderActivity.class);
 //            intent.putExtra(REMINDER_ID_MESSAGE, reminderName);
-            intent.putExtra(REMINDER_ID_MESSAGE, (int)id);    //yolo
-            Log.d(TAG, String.format("Sending %d", (int)id));
+            intent.putExtra(REMINDER_ID_MESSAGE, (int)reminderID);    //yolo
+            Log.d(TAG, String.format("id: %d reminderID: %d", (int)id, reminderID));
             startActivity(intent);
         }
     }   //end class ListViewListener

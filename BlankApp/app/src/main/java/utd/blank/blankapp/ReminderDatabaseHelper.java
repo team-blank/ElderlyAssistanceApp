@@ -125,7 +125,7 @@ public class ReminderDatabaseHelper extends SQLiteOpenHelper {
 
     public Reminder getReminder(int id) {
         String REMINDER_SELECT_QUERY = String.format("SELECT * FROM %s WHERE %s = %s;",
-                TABLE_REMINDERS, KEY_REMINDER_ID, id+1);  //offset by 1 b/c SQL records start at row 1
+                TABLE_REMINDERS, KEY_REMINDER_ID, id);
         Log.d(TAG, REMINDER_SELECT_QUERY);
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.rawQuery(REMINDER_SELECT_QUERY, null);

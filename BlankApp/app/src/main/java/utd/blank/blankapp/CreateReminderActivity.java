@@ -38,7 +38,7 @@ public class CreateReminderActivity extends AppCompatActivity {
         ReminderDatabaseHelper dbHelper = ReminderDatabaseHelper.getInstance(this);
         Reminder r = dbHelper.getReminder(reminder_id);
         Log.d(TAG, "Retrieved " + r.name + " " + r.id);
-        if (reminder_id >= 0) {
+        if (reminder_id >= 1) {
             EditText editText = (EditText) findViewById(R.id.editText);
             editText.setText(r.name);
             editText = (EditText) findViewById(R.id.editText2);
