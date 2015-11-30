@@ -124,7 +124,8 @@ public class MainActivity extends AppCompatActivity {
             reminderIDs = new int[reminders.size()];
             int i = 0;
             for (Reminder reminder : reminders) {
-                names.add(reminder.name + " " + reminder.category);
+                names.add(reminder.hour + ":" + reminder.minute + " " +
+                        reminder.name + " " + CreateReminderActivity.categories[reminder.category]);
                 reminderIDs[i++] = reminder.id;
             }
             adapter.clear();

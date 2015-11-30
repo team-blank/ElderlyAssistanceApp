@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="utd.blank.blankapp" >
+
     <uses-permission android:name="android.permission.READ_CALENDAR" />
     <uses-permission android:name="android.permission.WRITE_CALENDAR" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
-
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
 
     <application
         android:allowBackup="true"
@@ -25,6 +26,14 @@
             android:name=".CreateReminderActivity"
             android:label="@string/title_activity_create_reminder" >
         </activity>
+
+        <receiver android:name=".ReminderBroadcastReceiver" >
+        </receiver>
+
+        <service
+            android:name=".ReminderIntentService"
+            android:exported="false" >
+        </service>
     </application>
 
 </manifest>
