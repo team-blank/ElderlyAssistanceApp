@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TimePicker;
@@ -48,6 +49,9 @@ public class CreateReminderActivity extends AppCompatActivity {
             timePicker.setCurrentMinute(r.minute);
             ImageView imageView = (ImageView) findViewById(R.id.imageView);
             //imageView.setImageURI(Uri.fromFile(new File(r.imagePath)));
+        } else {
+            //its a new reminder
+            ((Button)findViewById(R.id.button4)).setVisibility(View.INVISIBLE);
         }
 
     }
@@ -102,6 +106,15 @@ public class CreateReminderActivity extends AppCompatActivity {
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE);
+    }
+
+    public void deleteReminder(View view) {
+        Intent intent = new Intent(this, MainActivity.class);
+
+        ReminderDatabaseHelper dbHelper = ReminderDatabaseHelper.getInstance(this);
+        dbHelper.deleteReminder(currentID);
+
+        startActivity(intent);
     }
 
     @Override

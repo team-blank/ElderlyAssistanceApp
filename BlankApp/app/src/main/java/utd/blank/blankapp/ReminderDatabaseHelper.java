@@ -188,6 +188,13 @@ public class ReminderDatabaseHelper extends SQLiteOpenHelper {
         return reminders;
     }   //end getAllReminders
 
+    public void deleteReminder(int id) {
+        String table = TABLE_REMINDERS;
+        String whereClause = "id = " + id;
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete(table, whereClause, null);
+    }
+
     //don't use this
     public void deleteAllReminders() {
         SQLiteDatabase db = getWritableDatabase();
