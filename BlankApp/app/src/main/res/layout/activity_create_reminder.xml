@@ -25,33 +25,44 @@
         android:password="false"
         android:phoneNumber="false" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Delete"
-        android:id="@+id/button4"
-        android:layout_gravity="center_horizontal"
-        android:onClick="deleteReminder" />
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/button_save"
-        android:id="@+id/button2"
-        android:layout_gravity="right"
-        android:onClick="saveReminder" />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/button_save"
+            android:id="@+id/button2"
+            android:onClick="saveReminder" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Image"
+            android:id="@+id/button3"
+            android:onClick="openGallery" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Delete"
+            android:id="@+id/button4"
+            android:onClick="deleteReminder" />
+
+        <Spinner
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/spinner"
+            android:layout_weight="1"
+            android:spinnerMode="dropdown" />
+    </LinearLayout>
 
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/imageView"
         android:layout_gravity="center_horizontal" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Image"
-        android:id="@+id/button3"
-        android:onClick="openGallery" />
 
 </LinearLayout>

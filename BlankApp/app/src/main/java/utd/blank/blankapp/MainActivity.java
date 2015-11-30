@@ -12,8 +12,10 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,26 +36,21 @@ public class MainActivity extends AppCompatActivity {
         reminderIDs = new int[reminders.size()];
         int i = 0;
         for (Reminder reminder : reminders) {
-            names.add(reminder.name);
+            names.add(reminder.hour + ":" + reminder.minute + " " +
+                    reminder.name + " " + CreateReminderActivity.categories[reminder.category]);
             reminderIDs[i++] = reminder.id;
         }
 
-//        //testing some db stuff
-//        Reminder newReminder = new Reminder();
-//
-//        ReminderDatabaseHelper dbHelper = ReminderDatabaseHelper.getInstance(this);
-//        dbHelper.addReminder(newReminder);
-//
-//        List<Reminder> reminders = dbHelper.getAllReminders();
-//        for (Reminder reminder : reminders) {
-//            System.out.println("Name:" + reminder.name + " Desc:" + reminder.description + " H:" +
-//                reminder.hour + " M:" + reminder.minute);
-//        }
-
-       ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_1, names);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(new ListViewListener(this, listView));
+
+        Spinner s = (Spinner) findViewById(R.id.spinner2);
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_spinner_item, CreateReminderActivity.categories);
+        s.setAdapter(spinnerAdapter);
+        s.setOnItemSelectedListener(new CategorySpinnerListener(adapter, this));
     }
 
     @Override
@@ -96,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            int reminderID = reminderIDs[(int)id];
+            int reminderID = reminderIDs[(int) id];
 
             String reminderName = (String) listView.getItemAtPosition(position);
             Toast.makeText(getApplicationContext(),
@@ -105,9 +102,39 @@ public class MainActivity extends AppCompatActivity {
 
             Intent intent = new Intent(this.parent, CreateReminderActivity.class);
 //            intent.putExtra(REMINDER_ID_MESSAGE, reminderName);
-            intent.putExtra(REMINDER_ID_MESSAGE, (int)reminderID);    //yolo
-            Log.d(TAG, String.format("id: %d reminderID: %d", (int)id, reminderID));
+            intent.putExtra(REMINDER_ID_MESSAGE, (int) reminderID);    //yolo
+            Log.d(TAG, String.format("id: %d reminderID: %d", (int) id, reminderID));
             startActivity(intent);
         }
     }   //end class ListViewListener
+
+    private class CategorySpinnerListener implements AdapterView.OnItemSelectedListener {
+        ArrayAdapter<String> adapter;
+        Activity parent;
+
+        public CategorySpinnerListener(ArrayAdapter<String> a, Activity parent) {
+            this.adapter = a;
+            this.parent = parent;
+        }
+
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            List<Reminder> reminders = ReminderDatabaseHelper.getInstance(this.parent).getRemindersByCategory(position);
+            List<String> names = new ArrayList<>();
+            reminderIDs = new int[reminders.size()];
+            int i = 0;
+            for (Reminder reminder : reminders) {
+                names.add(reminder.name + " " + reminder.category);
+                reminderIDs[i++] = reminder.id;
+            }
+            adapter.clear();
+            adapter.addAll(names);
+            adapter.notifyDataSetChanged();
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
+
+        }
+    }
 }

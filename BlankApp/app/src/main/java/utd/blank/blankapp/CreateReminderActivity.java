@@ -8,10 +8,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import java.io.File;
 import java.util.List;
@@ -20,16 +23,28 @@ public class CreateReminderActivity extends AppCompatActivity {
     private String TAG = "cra";
     private int currentID = -1;
     static int PICK_IMAGE = 100;
+    private ReminderBroadcastReceiver notificationManager;
+    public static String[] categories = new String[] {
+            "Event",
+            "Medicine",
+            "Food",
+            "Pet"
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_reminder);
+        Spinner s = (Spinner) findViewById(R.id.spinner);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_spinner_item, categories);
+        s.setAdapter(adapter);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+        notificationManager = new ReminderBroadcastReceiver();
         Intent intent = getIntent();
         int reminder_id = intent.getIntExtra(MainActivity.REMINDER_ID_MESSAGE, -1);
         currentID = reminder_id;
@@ -48,12 +63,13 @@ public class CreateReminderActivity extends AppCompatActivity {
             timePicker.setCurrentHour(r.hour);
             timePicker.setCurrentMinute(r.minute);
             ImageView imageView = (ImageView) findViewById(R.id.imageView);
+            Spinner s = (Spinner) findViewById(R.id.spinner);
+            s.setSelection(r.category);
             //imageView.setImageURI(Uri.fromFile(new File(r.imagePath)));
         } else {
             //its a new reminder
             ((Button)findViewById(R.id.button4)).setVisibility(View.INVISIBLE);
         }
-
     }
 
     @Override
@@ -84,19 +100,31 @@ public class CreateReminderActivity extends AppCompatActivity {
         r.description = editText.getText().toString();
         TimePicker timePicker = (TimePicker) findViewById(R.id.timePicker);
 
+        Spinner spinner = (Spinner) findViewById(R.id.spinner);
+        Log.d(TAG, "Spinner at " + spinner.getSelectedItemPosition());
+        r.category = spinner.getSelectedItemPosition();
+
         //the new methods don't work? but deprecated do.
         r.hour = timePicker.getCurrentHour();
+
         r.minute = timePicker.getCurrentMinute();
         //r.hour = timePicker.getHour();
         //r.minute = timePicker.getMinute();
 
         ReminderDatabaseHelper dbHelper = ReminderDatabaseHelper.getInstance(this);
         Log.d(TAG, String.format("Adding or updating reminder with id %d", currentID));
+        Toast.makeText(getApplicationContext(),
+                "Category " + categories[r.category], Toast.LENGTH_LONG)
+                .show();
         if (r.id >= 0) {
             dbHelper.updateReminder(r);
         } else {
             dbHelper.addReminder(r);
         }
+
+        //schedule next notification of this reminder
+        notificationManager.setAlarm(this.getApplicationContext(), r);
+
 
         startActivity(intent);
     }
