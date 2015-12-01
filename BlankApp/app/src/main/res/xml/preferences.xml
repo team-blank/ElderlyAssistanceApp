@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <EditTextPreference android:title="Emergency Contact Number"
+        android:key="contactnumber"
+        android:summary="This number will be messaged in emergencies."/>
+</PreferenceScreen>

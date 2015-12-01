@@ -93,7 +93,8 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-
+            Intent i = new Intent(this, ReminderPreferenceActivity.class);
+            startActivity(i);
             return true;
         }
 

@@ -29,6 +29,12 @@
             android:screenOrientation="portrait" >
         </activity>
 
+        <activity
+            android:name=".ReminderPreferenceActivity"
+            android:label="@string/title_preferences"
+            android:screenOrientation="portrait" >
+        </activity>
+
         <receiver android:name=".ReminderBroadcastReceiver" >
         </receiver>
 
