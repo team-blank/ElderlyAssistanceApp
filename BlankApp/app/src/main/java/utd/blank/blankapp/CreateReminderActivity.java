@@ -1,7 +1,10 @@
 package utd.blank.blankapp;
 
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -172,7 +175,18 @@ public class CreateReminderActivity extends AppCompatActivity {
         if (resultCode == RESULT_OK && requestCode == PICK_IMAGE) {
             Uri imageUri = data.getData();
             Log.d(TAG, "Got " + imageUri.getPath());
-            currentPath = imageUri.getPath();
+
+            //getting the actual path
+            String[] proj = { MediaStore.Images.Media.DATA };
+            CursorLoader loader = new CursorLoader(this.getApplicationContext(), imageUri, proj, null, null, null);
+            Cursor cursor = loader.loadInBackground();
+            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            String result = cursor.getString(column_index);
+            cursor.close();
+            currentPath = result;
+//            currentPath = imageUri.getPath();
+
             ImageView imageView = (ImageView) findViewById(R.id.imageView);
             imageView.setImageURI(imageUri);
             Log.d(TAG, "Set new image?");

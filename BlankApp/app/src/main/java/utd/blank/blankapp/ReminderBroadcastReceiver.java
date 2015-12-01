@@ -12,8 +12,10 @@ import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by atvaccaro on 11/29/15.
@@ -72,6 +74,35 @@ public class ReminderBroadcastReceiver extends BroadcastReceiver {
         Log.d(TAG, "Sending notification w/ name " + name + " and description " + description + " and path " + imagePath);
         notificationManager.notify(NOTIFICATION_ID, n);
 
+        List<Reminder> reminders = ReminderDatabaseHelper.getInstance(context).getAllReminders();
+        List<String> names = new ArrayList<>();
+        int[] reminderIDs = new int[reminders.size()];
+        int i = 0;
+        Reminder soonest = null;
+        if (reminders.size() > 0) {
+
+            soonest = reminders.get(0);    //for getting next reminder to schedule
+            Date currentDate = Calendar.getInstance().getTime();
+            for (Reminder reminder : reminders) {
+                names.add(reminder.hour + ":" + reminder.minute + " " + reminder.name);
+                reminderIDs[i++] = reminder.id;
+
+                if ((reminder.hour < currentDate.getHours() ? reminder.hour + 24 : reminder.hour) - currentDate.getHours()
+                        <=
+                        (soonest.hour < currentDate.getHours() ? soonest.hour + 24 : soonest.hour) - currentDate.getHours()) {
+                    if ((reminder.minute < currentDate.getMinutes() ? reminder.minute + 60 : reminder.minute) - currentDate.getMinutes()
+                            <=
+                            (soonest.minute < currentDate.getMinutes() ? soonest.minute + 60 : soonest.minute) - currentDate.getMinutes()) {
+                        if (reminders.size() > 1 && (reminder.hour != currentDate.getHours() || reminder.minute != currentDate.getMinutes())) { soonest = reminder; }
+                    }
+                }
+            }
+        }
+        if (soonest != null) {
+            Log.d(TAG, "Scheduled " + soonest.name + " for " + soonest.hour + ":" + soonest.minute);
+            ReminderBroadcastReceiver.setAlarm(context, soonest);
+        }
+
         Intent smsIntent = new Intent(context, SmsBroadcastReceiver.class);
         final PendingIntent pIntent = PendingIntent.getBroadcast(context, ReminderBroadcastReceiver.SMS_CODE,
                 smsIntent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -99,6 +130,9 @@ public class ReminderBroadcastReceiver extends BroadcastReceiver {
         Date currentDate = Calendar.getInstance().getTime();
         int hoursDelay = (r.hour < currentDate.getHours() ? r.hour + 24 : r.hour) - currentDate.getHours();
         int minutesDelay = (r.minute < currentDate.getMinutes() ? r.minute + 60 : r.minute) - currentDate.getMinutes();
+        if (r.hour == currentDate.getHours() && r.minute == currentDate.getMinutes()) {
+            hoursDelay += 24;
+        }
         alarm.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + hoursDelay*3600*1000 + minutesDelay*60*1000, pIntent);
         Log.d(TAG, "Scheduled alarm w/ delay of " + hoursDelay + ":" + minutesDelay);
     }

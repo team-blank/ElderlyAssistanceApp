@@ -16,6 +16,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import java.sql.Array;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -43,7 +44,8 @@ public class MainActivity extends AppCompatActivity {
             soonest = reminders.get(0);    //for getting next reminder to schedule
             Date currentDate = Calendar.getInstance().getTime();
             for (Reminder reminder : reminders) {
-                names.add(reminder.hour + ":" + reminder.minute + " " + reminder.name);
+                String n = "" + String.format("%02d", reminder.hour) + ":" + String.format("%02d", reminder.minute) + " " + reminder.name;
+                names.add(n);
                 reminderIDs[i++] = reminder.id;
 
                 if ((reminder.hour < currentDate.getHours() ? reminder.hour + 24 : reminder.hour) - currentDate.getHours()
@@ -147,8 +149,8 @@ public class MainActivity extends AppCompatActivity {
             reminderIDs = new int[reminders.size()];
             int i = 0;
             for (Reminder reminder : reminders) {
-                names.add(reminder.hour + ":" + reminder.minute + " " +
-                        reminder.name + " " + CreateReminderActivity.categories[reminder.category]);
+                names.add(String.format("%02d", reminder.hour) + ":" + String.format("%02d", reminder.minute) + " " +
+                        reminder.name);
                 reminderIDs[i++] = reminder.id;
             }
             adapter.clear();
