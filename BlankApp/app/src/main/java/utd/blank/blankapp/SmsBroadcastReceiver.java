@@ -23,10 +23,12 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
 
         if (existAlarm(context, ReminderBroadcastReceiver.SMS_CODE) != null) {
             SmsManager smsManager = SmsManager.getDefault();
-            Log.d(TAG, "Reminder missed, sending sms");
+            Log.d(TAG, "Reminder missed, sending sms to " + CONTACT_NUMBER);
             smsManager.sendTextMessage("+1" + CONTACT_NUMBER, null, "Reminder not answered", null, null);
         } else {
-            Log.d(TAG, "Reminder confirmed");
+            SmsManager smsManager = SmsManager.getDefault();
+            Log.d(TAG, "Reminder confirmed, sending sms to " + CONTACT_NUMBER);
+            smsManager.sendTextMessage("+1" + CONTACT_NUMBER, null, "Reminder answered", null, null);
         }
     }
 

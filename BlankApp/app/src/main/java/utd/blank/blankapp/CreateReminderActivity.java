@@ -1,6 +1,11 @@
 package utd.blank.blankapp;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.Context;
 import android.content.CursorLoader;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -161,12 +166,11 @@ public class CreateReminderActivity extends AppCompatActivity {
     }
 
     public void deleteReminder(View view) {
-        Intent intent = new Intent(this, MainActivity.class);
+        ReminderConfirmListener dialogClickListener = new ReminderConfirmListener(CreateReminderActivity.this);
 
-        ReminderDatabaseHelper dbHelper = ReminderDatabaseHelper.getInstance(this);
-        dbHelper.deleteReminder(currentID);
-
-        startActivity(intent);
+        AlertDialog.Builder builder = new AlertDialog.Builder(CreateReminderActivity.this);
+        builder.setMessage("Are you sure?").setPositiveButton("Yes", dialogClickListener)
+                .setNegativeButton("No", dialogClickListener).show();
     }
 
     @Override
@@ -190,6 +194,31 @@ public class CreateReminderActivity extends AppCompatActivity {
             ImageView imageView = (ImageView) findViewById(R.id.imageView);
             imageView.setImageURI(imageUri);
             Log.d(TAG, "Set new image?");
+        }
+    }
+
+    private class ReminderConfirmListener implements DialogInterface.OnClickListener {
+        Activity activity = null;
+
+        public ReminderConfirmListener(Activity a) {
+            super();
+            this.activity = a;
+        }
+
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            switch (which){
+                case DialogInterface.BUTTON_POSITIVE:
+                    ReminderDatabaseHelper dbHelper = ReminderDatabaseHelper.getInstance(activity.getApplicationContext());
+                    dbHelper.deleteReminder(currentID);                //Yes button clicked
+                    Intent intent = new Intent(activity.getApplicationContext(), MainActivity.class);
+                    startActivity(intent);
+                    break;
+
+                case DialogInterface.BUTTON_NEGATIVE:
+                    dialog.dismiss();
+                    break;
+            }
         }
     }
 
