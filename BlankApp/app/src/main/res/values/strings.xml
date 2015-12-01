@@ -3,7 +3,7 @@
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-    <string name="title_activity_create_reminder">CreateReminderActivity</string>
+    <string name="title_activity_create_reminder">Create Reminder</string>
 
     <string name="button_save">Save</string>
     <string name="button_create_reminder">Create</string>
