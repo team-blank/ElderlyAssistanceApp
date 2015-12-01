@@ -17,11 +17,13 @@ import android.widget.Toast;
 
 import java.sql.Array;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+    private String TAG = "MainActivity";
     public final static String REMINDER_ID_MESSAGE = "com.utd.reminder.REMINDER_ID";
-    private String TAG = "main";
     private int[] reminderIDs = new int[0];
 
     @Override
@@ -35,10 +37,25 @@ public class MainActivity extends AppCompatActivity {
         List<String> names = new ArrayList<>();
         reminderIDs = new int[reminders.size()];
         int i = 0;
-        for (Reminder reminder : reminders) {
-            names.add(reminder.hour + ":" + reminder.minute + " " +
-                    reminder.name + " " + CreateReminderActivity.categories[reminder.category]);
-            reminderIDs[i++] = reminder.id;
+        Reminder soonest = null;
+        if (reminders.size() > 0) {
+
+            soonest = reminders.get(0);    //for getting next reminder to schedule
+            Date currentDate = Calendar.getInstance().getTime();
+            for (Reminder reminder : reminders) {
+                names.add(reminder.hour + ":" + reminder.minute + " " + reminder.name);
+                reminderIDs[i++] = reminder.id;
+
+                if ((reminder.hour < currentDate.getHours() ? reminder.hour + 24 : reminder.hour) - currentDate.getHours()
+                        <=
+                        (soonest.hour < currentDate.getHours() ? soonest.hour + 24 : soonest.hour) - currentDate.getHours()) {
+                    if ((reminder.minute < currentDate.getMinutes() ? reminder.minute + 60 : reminder.minute) - currentDate.getMinutes()
+                            <=
+                            (soonest.minute < currentDate.getMinutes() ? soonest.minute + 60 : soonest.minute) - currentDate.getMinutes()) {
+                        soonest = reminder;
+                    }
+                }
+            }
         }
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
@@ -51,6 +68,11 @@ public class MainActivity extends AppCompatActivity {
                 android.R.layout.simple_spinner_item, CreateReminderActivity.categories);
         s.setAdapter(spinnerAdapter);
         s.setOnItemSelectedListener(new CategorySpinnerListener(adapter, this));
+
+        if (soonest != null) {
+            Log.d(TAG, "Scheduled " + soonest.name + " for " + soonest.hour + ":" + soonest.minute);
+            ReminderBroadcastReceiver.setAlarm(this, soonest);
+        }
     }
 
     @Override
@@ -69,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+
             return true;
         }
 
@@ -103,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(this.parent, CreateReminderActivity.class);
 //            intent.putExtra(REMINDER_ID_MESSAGE, reminderName);
             intent.putExtra(REMINDER_ID_MESSAGE, (int) reminderID);    //yolo
-            Log.d(TAG, String.format("id: %d reminderID: %d", (int) id, reminderID));
+//            Log.d(TAG, String.format("id: %d reminderID: %d", (int) id, reminderID));
             startActivity(intent);
         }
     }   //end class ListViewListener

@@ -17,19 +17,21 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.List;
 
 public class CreateReminderActivity extends AppCompatActivity {
-    private String TAG = "cra";
+    private String TAG = "CreateReminderActivity";
     private int currentID = -1;
     static int PICK_IMAGE = 100;
     private ReminderBroadcastReceiver notificationManager;
-    public static String[] categories = new String[] {
+    public static String[] categories = new String[]{
             "Event",
             "Medicine",
             "Food",
             "Pet"
     };
+    static String currentPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +46,9 @@ public class CreateReminderActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        if (currentPath != null) {
+            Log.d(TAG, currentPath);
+        }
         notificationManager = new ReminderBroadcastReceiver();
         Intent intent = getIntent();
         int reminder_id = intent.getIntExtra(MainActivity.REMINDER_ID_MESSAGE, -1);
@@ -53,6 +58,9 @@ public class CreateReminderActivity extends AppCompatActivity {
 
         ReminderDatabaseHelper dbHelper = ReminderDatabaseHelper.getInstance(this);
         Reminder r = dbHelper.getReminder(reminder_id);
+        if (currentPath == null) {
+            currentPath = r.imagePath;
+        }
         Log.d(TAG, "Retrieved " + r.name + " " + r.id);
         if (reminder_id >= 1) {
             EditText editText = (EditText) findViewById(R.id.editText);
@@ -65,10 +73,18 @@ public class CreateReminderActivity extends AppCompatActivity {
             ImageView imageView = (ImageView) findViewById(R.id.imageView);
             Spinner s = (Spinner) findViewById(R.id.spinner);
             s.setSelection(r.category);
-            //imageView.setImageURI(Uri.fromFile(new File(r.imagePath)));
+            Toast.makeText(this.getApplicationContext(), r.imagePath, Toast.LENGTH_LONG);
+            if (currentPath != null) {
+                try {
+                    imageView.setImageURI(Uri.fromFile(new File(r.imagePath)));
+                } catch (Exception e) {
+
+                }
+            }
+
         } else {
             //its a new reminder
-            ((Button)findViewById(R.id.button4)).setVisibility(View.INVISIBLE);
+            ((Button) findViewById(R.id.button4)).setVisibility(View.INVISIBLE);
         }
     }
 
@@ -111,8 +127,12 @@ public class CreateReminderActivity extends AppCompatActivity {
         //r.hour = timePicker.getHour();
         //r.minute = timePicker.getMinute();
 
+        r.imagePath = currentPath;
+
         ReminderDatabaseHelper dbHelper = ReminderDatabaseHelper.getInstance(this);
         Log.d(TAG, String.format("Adding or updating reminder with id %d", currentID));
+        Log.d(TAG, "r.imagePath:" + r.imagePath + " currentPath:" + currentPath);
+        Log.d(TAG, "At time " + r.hour + ":" + r.minute);
         Toast.makeText(getApplicationContext(),
                 "Category " + categories[r.category], Toast.LENGTH_LONG)
                 .show();
@@ -123,7 +143,8 @@ public class CreateReminderActivity extends AppCompatActivity {
         }
 
         //schedule next notification of this reminder
-        notificationManager.setAlarm(this.getApplicationContext(), r);
+        //not anymore!
+//        notificationManager.setAlarm(this.getApplicationContext(), r);
 
 
         startActivity(intent);
@@ -151,8 +172,10 @@ public class CreateReminderActivity extends AppCompatActivity {
         if (resultCode == RESULT_OK && requestCode == PICK_IMAGE) {
             Uri imageUri = data.getData();
             Log.d(TAG, "Got " + imageUri.getPath());
+            currentPath = imageUri.getPath();
             ImageView imageView = (ImageView) findViewById(R.id.imageView);
             imageView.setImageURI(imageUri);
+            Log.d(TAG, "Set new image?");
         }
     }
 

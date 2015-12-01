@@ -14,6 +14,7 @@ import java.util.List;
  * Created by atvaccaro on 11/3/15.
  */
 public class ReminderDatabaseHelper extends SQLiteOpenHelper {
+    private static String TAG = "ReminderDatabaseHelper";
     private static ReminderDatabaseHelper sInstance;
 
     private static String DATABASE_NAME = "reminder_db";
@@ -29,7 +30,6 @@ public class ReminderDatabaseHelper extends SQLiteOpenHelper {
     private static String KEY_REMINDER_MINUTE = "minute";
     private static String KEY_REMINDER_IMAGEPATH = "imagepath";
 
-    private static String TAG = "db";   //tag output as db
 
     private ReminderDatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -104,7 +104,7 @@ public class ReminderDatabaseHelper extends SQLiteOpenHelper {
     public int updateReminder(Reminder reminder) {
         SQLiteDatabase db = this.getWritableDatabase();
 
-        Log.d(TAG, String.format("Updating reminder with id %d", reminder.id));
+//        Log.d(TAG, String.format("Updating reminder with id %d", reminder.id));
 
         ContentValues values = new ContentValues();
         values.put(KEY_REMINDER_MINUTE, reminder.minute);
@@ -125,10 +125,10 @@ public class ReminderDatabaseHelper extends SQLiteOpenHelper {
     public Reminder getReminder(int id) {
         String REMINDER_SELECT_QUERY = String.format("SELECT * FROM %s WHERE %s = %s;",
                 TABLE_REMINDERS, KEY_REMINDER_ID, id);
-        Log.d(TAG, REMINDER_SELECT_QUERY);
+//        Log.d(TAG, REMINDER_SELECT_QUERY);
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.rawQuery(REMINDER_SELECT_QUERY, null);
-        Log.d(TAG, String.format("Rows: %d", cursor.getCount()));
+//        Log.d(TAG, String.format("Rows: %d", cursor.getCount()));
         Reminder reminder = new Reminder();
         try {
             if (cursor.moveToFirst()) {
@@ -139,9 +139,9 @@ public class ReminderDatabaseHelper extends SQLiteOpenHelper {
                 reminder.hour = Integer.parseInt(cursor.getString(cursor.getColumnIndex(KEY_REMINDER_HOUR)));
                 reminder.minute = Integer.parseInt(cursor.getString(cursor.getColumnIndex(KEY_REMINDER_MINUTE)));
                 reminder.imagePath = cursor.getString(cursor.getColumnIndex(KEY_REMINDER_IMAGEPATH));
-                Log.d(TAG, String.format("%s %s %s %s %s %s %s",
-                        reminder.id, reminder.name, reminder.description,
-                        reminder.category, reminder.hour, reminder.minute, reminder.imagePath));
+//                Log.d(TAG, String.format("%s %s %s %s %s %s %s",
+//                        reminder.id, reminder.name, reminder.description,
+//                        reminder.category, reminder.hour, reminder.minute, reminder.imagePath));
             }
         } catch (Exception e) {
             Log.d(TAG, "Error while trying to retrieve reminder");
